@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#efe4d2">
+  <title>A letter for you</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Great+Vibes&display=swap" rel="stylesheet">
+
+  <style>
+/* ==========================================================
+   Digital Love Letter — styles
+   Colors and fonts live in :root so they're easy to change.
+   ========================================================== */
+
+:root {
+  --bg-light: #f6eddd;
+  --bg-dark: #e6d6bd;
+  --paper: #fcf7ee;
+  --paper-edge: #efe3cf;
+  --env-back: #d9c4a3;
+  --env-front: #e8d8bc;
+  --env-flap: #e0cdae;
+  --ink: #4a3a31;
+  --ink-soft: #7d6a5c;
+  --seal: #9a4a54;
+
+  --font-text: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-script: "Great Vibes", "Snell Roundhand", "Brush Script MT", cursive;
+
+  --env-w: min(86vw, 380px);
+  --open-ms: 1000ms;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* Make sure the hidden attribute always wins over display: flex */
+[hidden] { display: none !important; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  font-family: var(--font-text);
+  color: var(--ink);
+  background: radial-gradient(ellipse at 50% 30%, var(--bg-light), var(--bg-dark));
+  background-attachment: fixed;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Soft paper grain over the whole page */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: .35;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .35 0 0 0 0 .25 0 0 0 .18 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.scene {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+}
+
+/* ---------- Scene 1: envelope ---------- */
+
+.scene-open {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.6rem;
+  padding-inline: 1.25rem;
+  transition: opacity .8s ease, transform .8s ease;
+}
+.scene-open.is-leaving { opacity: 0; transform: translateY(14px); }
+
+.welcome {
+  margin: 0;
+  font-size: clamp(1.6rem, 6.5vw, 2.3rem);
+  font-style: italic;
+  font-weight: 400;
+  text-align: center;
+  letter-spacing: .01em;
+}
+
+.hint {
+  margin: 0;
+  min-height: 1.4em;
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--ink-soft);
+  transition: opacity .4s ease;
+}
+.scene-open.is-opening .hint { opacity: 0; }
+
+.envelope {
+  position: relative;
+  display: block;
+  width: var(--env-w);
+  aspect-ratio: 3 / 2;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  perspective: 1200px;
+  filter: drop-shadow(0 14px 18px rgba(86, 58, 30, .22));
+  transition: transform .4s ease;
+  touch-action: manipulation;
+}
+.envelope:not(.is-open):hover { transform: translateY(-4px); }
+.envelope:focus-visible { outline: 2px solid var(--seal); outline-offset: 10px; border-radius: 4px; }
+.envelope.is-open { cursor: default; }
+
+.envelope > span { position: absolute; display: block; }
+
+.env-back {
+  inset: 0;
+  background: var(--env-back);
+  border-radius: 3px;
+}
+
+/* The small paper that slides out */
+.env-paper {
+  left: 6%; right: 6%;
+  top: 8%; height: 86%;
+  z-index: 1;
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 15px, rgba(125, 106, 92, .16) 15px 16px) 12% 18% / 76% 60% no-repeat,
+    var(--paper);
+  border-radius: 2px;
+  box-shadow: 0 1px 4px rgba(86, 58, 30, .2);
+  transition: transform calc(var(--open-ms) * 1.1) cubic-bezier(.3, .7, .2, 1) calc(var(--open-ms) * .55);
+}
+.envelope.is-open .env-paper { transform: translateY(-62%); }
+
+/* Front pocket: everything below the V of the flap */
+.env-front-wrap {
+  inset: 0;
+  z-index: 2;
+  filter: drop-shadow(0 -2px 3px rgba(86, 58, 30, .22));
+  pointer-events: none;
+}
+.env-front {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, #efe0c6, var(--env-front) 55%, #dfcba9);
+  border-radius: 3px;
+  clip-path: polygon(0 0, 50% 55%, 100% 0, 100% 100%, 0 100%);
+}
+
+/* Top flap */
+.env-flap {
+  left: 0; right: 0; top: 0;
+  height: 56%;
+  z-index: 3;
+  background: linear-gradient(180deg, #e9d9bd, var(--env-flap));
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform-origin: top center;
+  transition:
+    transform var(--open-ms) cubic-bezier(.5, 0, .2, 1),
+    z-index 0s calc(var(--open-ms) * .45);
+}
+.envelope.is-open .env-flap { transform: rotateX(180deg); z-index: 0; }
+
+.env-seal {
+  position: absolute;
+  left: 50%; bottom: 14%;
+  width: 17%;
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #f6e6dc;
+  background: radial-gradient(circle at 35% 30%, #b45d68, var(--seal));
+  box-shadow: 0 2px 4px rgba(60, 20, 25, .35);
+  transition: opacity .3s ease;
+}
+.env-seal svg { width: 56%; height: 56%; }
+.envelope.is-open .env-seal { opacity: 0; }
+
+/* ---------- Scene 2: the letter ---------- */
+
+.scene-letter {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: clamp(1rem, 5vw, 3.5rem) clamp(.75rem, 4vw, 2rem);
+}
+
+.letter {
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+  padding: clamp(2rem, 8vw, 4.5rem) clamp(1.5rem, 8vw, 4.5rem);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .5), rgba(239, 227, 207, .35)),
+    var(--paper);
+  border-radius: 3px;
+  box-shadow:
+    0 1px 2px rgba(86, 58, 30, .18),
+    0 18px 40px rgba(86, 58, 30, .2),
+    inset 0 0 60px rgba(214, 190, 150, .28);
+  opacity: 0;
+  transform: translateY(26px) scale(.98);
+  transition: opacity 1s ease, transform 1.1s cubic-bezier(.2, .7, .2, 1);
+}
+.letter.is-visible { opacity: 1; transform: none; }
+
+.letter-date {
+  margin: 0 0 2rem;
+  text-align: right;
+  font-style: italic;
+  font-size: 1.15rem;
+  color: var(--ink-soft);
+}
+.letter-date:empty { display: none; }
+
+.letter-greeting {
+  margin: 0 0 1.6rem;
+  font-family: var(--font-script);
+  font-weight: 400;
+  font-size: clamp(2.3rem, 9vw, 3.2rem);
+  line-height: 1.15;
+}
+
+.letter-body p,
+.letter-closing {
+  margin: 0 0 1.35em;
+  font-size: clamp(1.28rem, 4.6vw, 1.5rem);
+  font-weight: 500;
+  line-height: 1.75;
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
+
+/* Justified paragraphs */
+.letter-body p {
+  text-align: justify;
+  text-justify: inter-word;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+
+.letter-sender {
+  margin: 1.2rem 0 0;
+  font-family: var(--font-script);
+  font-size: clamp(2.2rem, 8.5vw, 3rem);
+  line-height: 1.2;
+  color: var(--seal);
+}
+
+/* Lines appear one after another once the paper has settled */
+.letter-body p, .letter-closing, .letter-sender, .letter-greeting, .letter-date {
+  opacity: 0;
+  transition: opacity 1.1s ease;
+  transition-delay: calc(var(--i, 0) * 160ms + 500ms);
+}
+.letter.is-visible .letter-body p,
+.letter.is-visible .letter-closing,
+.letter.is-visible .letter-sender,
+.letter.is-visible .letter-greeting,
+.letter.is-visible .letter-date { opacity: 1; }
+
+/* ---------- Accessibility ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: .01ms !important;
+    transition-delay: 0s !important;
+  }
+}
+
+@media (min-width: 700px) {
+  .scene-open { gap: 3.2rem; }
+}
+
+</style>
+</head>
+<body>
+
+  <!-- Scene 1: the envelope -->
+  <main class="scene scene-open" id="sceneOpen">
+    <p class="welcome" id="welcomeText"></p>
+
+    <button class="envelope" id="envelope" type="button" aria-label="Open the letter">
+      <span class="env-back"></span>
+      <span class="env-paper"></span>
+      <span class="env-front-wrap"><span class="env-front"></span></span>
+      <span class="env-flap">
+        <span class="env-seal" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10.2-7.5 10.2z" fill="currentColor"/></svg>
+        </span>
+      </span>
+    </button>
+
+    <p class="hint" id="hintText"></p>
+  </main>
+
+  <!-- Scene 2: the letter -->
+  <article class="scene scene-letter" id="sceneLetter" hidden>
+    <div class="letter" id="letter">
+      <p class="letter-date" id="letterDate"></p>
+      <h1 class="letter-greeting" id="letterGreeting"></h1>
+      <div class="letter-body" id="letterBody"></div>
+      <p class="letter-closing" id="letterClosing"></p>
+      <p class="letter-sender" id="letterSender"></p>
+    </div>
+  </article>
+
+  <script>
+/* ==========================================================
+   Digital Love Letter — script
+   Edit the CONFIG block below. That's all you need to change.
+   Leave a blank line's worth of text between paragraphs by
+   adding a new string to the "paragraphs" list.
+   ========================================================== */
+
+const CONFIG = {
+  // Opening screen
+  pageTitle: "A letter for you",
+  welcomeText: "I have something for you...",
+  hintText: "Tap the envelope to open it",
+
+  // The letter
+  date: "November 4, 2026",              // set to "" to hide
+  recipient: "Stephany",
+  greeting: "Dear {recipient},",      // {recipient} is replaced automatically
+
+  paragraphs: [
+    "Hi, I'm prolly the last person you'd expect to reach out, but here am I, breaking the no-contact after almost two years, I think?",
+    "I guess it's a little foolish to still leave a little room for possibilities, to wonder what it would've been like to be with you, even just for a little while. To yearn for something that never even had the chance to begin. And to think that I've already moved past you, only to realize that something inside me keeps telling me otherwise. Still, I don't want to force anything, nor convince myself that something is bound to happen.",
+    "I'm not reaching out because I expect anything in return. I guess there are just things that happened between us that I've never really understood that's prolly holding me back, and maybe, just maybe, having an honest conversation would help me finally make sense of them. I know things might not have ended well between us, but it would genuinely mean something to me if we could talk things through. Again, this isn't about rebuilding a bridge that's already been burned, but to simply understand what happened.",
+    "I really hope this message doesn't put any kind of pressure on you or your decision. But if you're open to it, I'd be down for a drink or coffee sometime, just to talk things out.",
+  ],
+
+  closing: "From unxpected person,",
+  sender: "Zam",
+
+  // How long the envelope animation plays before the letter appears (ms)
+  revealDelay: 2400,
+};
+
+/* ---------------- No need to edit below this line ---------------- */
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+
+  const sceneOpen = $("sceneOpen");
+  const sceneLetter = $("sceneLetter");
+  const envelope = $("envelope");
+  const letter = $("letter");
+
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Fill in the text
+  document.title = CONFIG.pageTitle;
+  $("welcomeText").textContent = CONFIG.welcomeText;
+  $("hintText").textContent = CONFIG.hintText;
+  $("letterDate").textContent = CONFIG.date;
+  $("letterGreeting").textContent = CONFIG.greeting.replace("{recipient}", CONFIG.recipient);
+  $("letterClosing").textContent = CONFIG.closing;
+  $("letterSender").textContent = CONFIG.sender;
+
+  const body = $("letterBody");
+  CONFIG.paragraphs.forEach((text, i) => {
+    const p = document.createElement("p");
+    p.textContent = text;
+    p.style.setProperty("--i", i + 1);
+    body.appendChild(p);
+  });
+  const n = CONFIG.paragraphs.length;
+  $("letterClosing").style.setProperty("--i", n + 1);
+  $("letterSender").style.setProperty("--i", n + 2);
+  $("letterGreeting").style.setProperty("--i", 0);
+  $("letterDate").style.setProperty("--i", 0);
+
+  // Open the envelope (works for mouse, touch, and keyboard via <button>)
+  let opened = false;
+
+  function openEnvelope() {
+    if (opened) return;
+    opened = true;
+    envelope.classList.add("is-open");
+    envelope.setAttribute("aria-label", "Letter opening");
+    sceneOpen.classList.add("is-opening");
+    setTimeout(showLetter, reducedMotion ? 150 : CONFIG.revealDelay);
+  }
+
+  function showLetter() {
+    sceneOpen.classList.add("is-leaving");
+    setTimeout(() => {
+      sceneOpen.hidden = true;
+      sceneLetter.hidden = false;
+      window.scrollTo(0, 0);
+      // wait a frame so the transition runs
+      requestAnimationFrame(() => requestAnimationFrame(() => letter.classList.add("is-visible")));
+    }, reducedMotion ? 0 : 800);
+  }
+
+  envelope.addEventListener("click", openEnvelope);
+})();
+
+</script>
+</body>
+</html>
